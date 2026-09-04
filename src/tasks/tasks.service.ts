@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus } from './task.model.js';
 import type { Task } from './task.model.js';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateTaskDto } from './dto/create-task.dto.js';
 
 @Injectable()
 export class TasksService {
@@ -19,19 +20,22 @@ export class TasksService {
         return task;
     }
 
-    createTask(title: string, description: string): Task {
+    // Agora recebe o DTO de uma vez só!
+    createTask(createTaskDto: CreateTaskDto): Task {
+        const { title, description } = createTaskDto; // Extrai os valores do DTO
+
         const task: Task = {
-            id: uuidv4(), // Gerando um ID único
+            id: uuidv4(),
             title,
             description,
-            status: TaskStatus.OPEN, // Toda tarefa começa como OPEN
+            status: TaskStatus.OPEN,
         };
         this.tasks.push(task);
         return task;
     }
 
     deleteTask(id: string): void {
-        const taskToDelete = this.getTaskById(id); // Já reaproveita o erro 404 se não achar
+        const taskToDelete = this.getTaskById(id);
         this.tasks = this.tasks.filter((task) => task.id !== taskToDelete.id);
     }
 

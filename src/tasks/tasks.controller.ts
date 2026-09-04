@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Param, Delete, Patch } from '@nestjs/commo
 import { TasksService } from './tasks.service.js';
 import { TaskStatus } from './task.model.js';
 import type { Task } from './task.model.js';
+import { CreateTaskDto } from './dto/create-task.dto.js';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto.js';
 
 @Controller('tasks')
 export class TasksController {
@@ -17,12 +19,10 @@ export class TasksController {
         return this.tasksService.getTaskById(id);
     }
 
+    // Agora recebemos o objeto inteiro validado!
     @Post()
-    createTask(
-        @Body('title') title: string,
-        @Body('description') description: string,
-    ): Task {
-        return this.tasksService.createTask(title, description);
+    createTask(@Body() createTaskDto: CreateTaskDto): Task {
+        return this.tasksService.createTask(createTaskDto);
     }
 
     @Delete('/:id')
@@ -30,11 +30,12 @@ export class TasksController {
         this.tasksService.deleteTask(id);
     }
 
+    // E aqui usamos o DTO de status!
     @Patch('/:id/status')
     updateTaskStatus(
         @Param('id') id: string,
-        @Body('status') status: TaskStatus,
+        @Body() updateTaskStatusDto: UpdateTaskStatusDto,
     ): Task {
-        return this.tasksService.updateTaskStatus(id, status);
+        return this.tasksService.updateTaskStatus(id, updateTaskStatusDto.status);
     }
 }
